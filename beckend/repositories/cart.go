@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fmt"
 	"waysbean/models"
 
 	"gorm.io/gorm"
@@ -14,6 +15,7 @@ type CartRepository interface {
 	UpdateCartTrans(models.Cart) (models.Cart, error)
 	DeleteCart(cart models.Cart, ID int) (models.Cart, error)
 	CartProduct(ProductID int) (models.Cart, error)
+	CartProductId(ProductID int) (models.Cart, error)
 }
 
 func RepositoryCart(db *gorm.DB) *repository {
@@ -60,6 +62,14 @@ func (r *repository) DeleteCart(cart models.Cart, ID int) (models.Cart, error) {
 
 func (r *repository) CartProduct(ProductID int) (models.Cart, error) {
 	var cart models.Cart
+	fmt.Println(ProductID)
+	err := r.db.Preload("Product").Debug().Find(&cart, "product_id = ?", ProductID).Error
+	return cart, err
+}
+
+func (r *repository) CartProductId(ProductID int) (models.Cart, error) {
+	var cart models.Cart
 	err := r.db.Preload("Product").Find(&cart, "product_id = ?", ProductID).Error
+
 	return cart, err
 }
